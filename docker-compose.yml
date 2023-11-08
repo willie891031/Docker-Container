@@ -1,0 +1,42 @@
+version: '3'
+services:
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    restart: always 
+    networks:
+      mynetwork:
+        ipv4_address: 172.34.0.2
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always 
+    networks:
+      mynetwork:
+        ipv4_address: 172.34.0.3
+
+  grafana:
+    image: grafana/grafana:6.7.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      mynetwork:
+        ipv4_address: 172.34.0.4
+
+networks:
+  mynetwork:
+    external:
+      name: dockernetwork
